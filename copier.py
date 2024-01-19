@@ -1,6 +1,13 @@
 import pynput, pyautogui, keyboard
 import os, sys, codecs, time, threading
 
+# edit to change the amount of characters allocated per book
+# estimate based off average text
+chars_per_page = 260
+
+# pages per book, java has 100, bedrock has 50
+
+pages_per_book = 100
 
 
 def printBook(book:[str], next:(int, int), prev:(int, int)):
@@ -72,19 +79,23 @@ def readFile(filePath:str):
             return None
 
 
-def splitString(input:str, n:int) -> [str]:
+def splitString(string:str, n:int) -> [str]:
     '''splits a string into a list of strings, each with length n,
     last one can be shorter.'''
-    return [ (input[ i : i + n ]) for i in range(0, len(input), n )]
+    return [ (string[ i : i + n ]) for i in range(0, len(string), n )]
     
+
+def clear():
+    if os.name == "nt":
+        os.system('cls')
+    else:
+        os.system('clear')
+
 
 def mainloop():
     while(True):
-        if os.name == "nt":
-            os.system('cls')
-        else:
-            os.system('clear')
-        print("This is Sav's copier script for minecraft books.\nPlease enter the name of the file you want to copy + paste.")
+        clear()
+        print("This is Sav's copier script for minecraft books.\nPlease enter the name of the file you want to copy + paste.\nIt should be in the folder of this program to work.\nKeep minecraft windowed to be able to see both this and the program.\nPress [Esc] at any point to stop.")
         filePath = input("File name: ")
         allText = readFile(filePath)
         if allText == None:
@@ -99,34 +110,23 @@ def mainloop():
         next = getMousePosition()
         print("Please right-click the 'previous' button in minecraft.")
         prev = getMousePosition()
-        print("Printing starts in 5 seconds.")
-        time.sleep(5)
 
-        allText = splitString(allText, 260)
-        if len(allText) > 25_500:
-            print("This is longer than 1 minecraft book.")
-            input("This isn't implemented, try again")
-            continue
-            # start of implementation
-            listText = splitString(allText, 25_500)
-            for book in listText:
-                book = splitString(book, 255)
-                for page in book:
-                    pyautogui.typewrite(page)
-                    mouse
+        if len(allText) > chars_per_page * pages_per_book:
+            books = splitString(allText, (chars_per_page * pages_per_book))
+            input(f"This file is {len(books)} books long.\n[Enter to continue]")
+            for i in range(len(books)):
+                clear()
+                input(f"This is book {i}/{len(books)}.\nAfter pressing Enter, printing will start in 5s.")
+                time.sleep(5)
+                printBook(splitString(books[i], chars_per_page), next, prev)
+
         else:
+            allText = splitString(allText, 260)
+            print("Printing starts in 5 seconds.")
+            time.sleep(5)
             printBook(allText, next, prev)
 
 
-    
-'''
-ices. In sit amet ligula id nunc scelerisque ultrices. Mauris sed ex est. Aliquam tempor scelerisque risus at posuere. Curabitur vestibulum magna sed justo fermentum, vitae euismod diam mattis. Quisque aliquam tellus vel nisi tincidunt, vitae ultricies au'''
-# mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
-# MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-# WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
-# AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-# ..............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
-# ∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞
 if(__name__ == "__main__"):
     keyboard.hook(interruptListener('esc'))
     mainloop()
