@@ -12,7 +12,7 @@ pages_per_book = 100
 def printBook(book: list[str], next_mouse_btn_pos: tuple[int, int], prev_mouse_btn_pos: tuple[int, int]):
     mouse = pynput.mouse.Controller()
     for page in book:
-        pyperclip.copy(page)
+        pyperclip.copy(page.strip())
         # time.sleep(0.1)
         pyautogui.hotkey("ctrl", "v")
         time.sleep(0.10)
@@ -79,7 +79,7 @@ def readFile(filePath: str):
     if os.path.exists(filePath):
         try:
             file = codecs.open(filePath, encoding="utf-8", errors="strict")
-            return file.read().replace("\n", " ")
+            return file.read().replace("\n", " ").replace("  ", " ").replace("  ", " ").replace("\t", "")
         except UnicodeDecodeError:
             input("This file seems like it's not valid UTF-8. ")
             return ""
