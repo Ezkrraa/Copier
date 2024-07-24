@@ -58,7 +58,7 @@ def getMousePosition() -> tuple[int, int]:
     yPos = 0
 
     def on_click(x, y, button, pressed):
-        if pressed and button == pynput.mouse.Button.right:
+        if pressed and button == pynput.mouse.Button.middle:
             nonlocal xPos, yPos
             xPos, yPos = controller.position
             listener.stop()
@@ -116,9 +116,9 @@ def mainloop():
             continue
 
         print("File was read.")
-        print("Please right-click the 'next page' button in minecraft.")
+        print("Please middle-click the 'next page' button in minecraft.")
         next = getMousePosition()
-        print("Please right-click the 'previous' button in minecraft.")
+        print("Please middle-click the 'previous' button in minecraft.")
         prev = getMousePosition()
 
         if len(allText) > (chars_per_page * pages_per_book):
