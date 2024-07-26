@@ -13,3 +13,4 @@ download the script, and a recent version of minecraft, run the following comman
 
 Then, turn the book you want to copy into a .txt file, and move it into the same folder as the script.
 open a terminal and minecraft in next to eachother, have your minecraft books ready and follow the instructions!
+Run the script with ```python copier.py```.
