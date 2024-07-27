@@ -1,18 +1,19 @@
 import pynput, pyautogui, keyboard, pyperclip
-import os, sys, codecs, time
+import os, codecs, time
+from math import ceil
 
-# edit to change the amount of characters allocated per book
-# estimate based off average text
-chars_per_page = 250
+import splitter
+
 
 # pages per book, java has 100, bedrock has 50
-pages_per_book = 100
+PAGES_PER_BOOK = 100
 
 
-def printBook(book: list[str], next_mouse_btn_pos: tuple[int, int], prev_mouse_btn_pos: tuple[int, int]):
+def printBook(book: list[list[str]], next_mouse_btn_pos: tuple[int, int], prev_mouse_btn_pos: tuple[int, int]):
     mouse = pynput.mouse.Controller()
     for page in book:
-        pyperclip.copy(page.strip())
+        page_txt = " ".join(page)
+        pyperclip.copy(page_txt.strip())
         # time.sleep(0.1)
         pyautogui.hotkey("ctrl", "v")
         time.sleep(0.10)
@@ -88,10 +89,10 @@ def readFile(filePath: str):
             return ""
 
 
-def splitString(string: str, n: int) -> list[str]:
-    """splits a string into a list of strings, each with length n,
-    last one can be shorter."""
-    return [(string[i : i + n]) for i in range(0, len(string), n)]
+# def splitString(string: str, n: int) -> list[str]:
+#     """splits a string into a list of strings, each with length n,
+#     last one can be shorter."""
+#     return [(string[i : i + n]) for i in range(0, len(string), n)]
 
 
 def clear():
@@ -108,49 +109,35 @@ def mainloop():
             "This is Sav's copier script for minecraft books.\nPlease enter the name of the file you want to copy + paste.\nIt should be in the folder of this program to work.\nKeep minecraft windowed to be able to see both this and the program.\nPress [Backspace] at any point to stop."
         )
         filePath = input("File name: ")
-        allText = readFile(filePath)
-        if allText == None:
-            continue
-        elif allText == "":
-            input("This is an empty file, try again.")
+        all_text = readFile(filePath)
+        if all_text == None:
             continue
 
-        print("File was read.")
+        pages = splitter.split_into_pages_and_lines(all_text)
+        if len(pages) > PAGES_PER_BOOK:
+            print(f"File was read. It is {ceil(len(pages) / 100)} books long.")
+        else:
+            print("File was read successfully.")
         print("Please middle-click the 'next page' button in minecraft.")
         next = getMousePosition()
         print("Please middle-click the 'previous' button in minecraft.")
         prev = getMousePosition()
 
-        if len(allText) > (chars_per_page * pages_per_book):
-            books = splitString(allText, (chars_per_page * pages_per_book))
-            print(f"This file is {len(books)} books long.\n[Enter to continue]")
-
-            for i in range(len(books)):
-                input(f"This is book {i+1}/{len(books)}.\nAfter pressing Enter, printing will start in 5s.")
+        if len(pages) > PAGES_PER_BOOK:
+            # handle multiple books
+            for i in range(0, len(pages), PAGES_PER_BOOK):
+                input(f"This is book {i//100+1}/{ceil(len(pages) / 100)}.\nAfter pressing Enter, printing will continue in 5s.")
                 time.sleep(5)
-                printBook(splitString(books[i], chars_per_page), next, prev)
+                # don't roll over into the start again
+                end = min(i + 100, len(pages))
+                printBook(pages[i:end], next, prev)
                 clear()
-
         else:
-            allText = splitString(allText, 260)
             input("After pressing Enter, printing will start in 5s.")
             time.sleep(5)
-            printBook(allText, next, prev)
+            printBook(pages, next, prev)
 
 
 if __name__ == "__main__":
     keyboard.hook(interruptListener())
     mainloop()
-
-
-# TODO:
-#
-# 1. Interruptlistener
-#
-# 2. Fix getMousePosition
-#     should return a mouse position (x, y), which will get used to calibrate next n prev buttons
-#     works!!
-# 3. pasting
-#     156.066s for 10_000 chars. seems fast enough to me
-#
-#
