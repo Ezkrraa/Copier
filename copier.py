@@ -16,25 +16,20 @@ def printBook(book: list[list[str]], next_mouse_btn_pos: tuple[int, int], prev_m
         pyperclip.copy(page_txt.strip())
         # time.sleep(0.1)
         pyautogui.hotkey("ctrl", "v")
-        time.sleep(0.10)
+        # time.sleep(0.10)
         mouse.position = next_mouse_btn_pos
-        time.sleep(0.1)
+        # time.sleep(0.1)
         mouse.click(pynput.mouse.Button.left)
 
     mouse.position = prev_mouse_btn_pos
-    time.sleep(0.1)
+    time.sleep(0.03)
     mouse.click(pynput.mouse.Button.left, 99)
 
 
 def awaitKeyPress() -> None:
-    output = False
-
     def on_release(key):
         if key == pynput.keyboard.Key.enter:
             listener.stop()
-            output = True
-        elif key == pynput.keyboard.Key.backspace:
-            output = False
 
     listener = pynput.keyboard.Listener(on_release=on_release)
     listener.start()
