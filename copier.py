@@ -113,6 +113,7 @@ def mainloop():
             print(f"File was read. It is {ceil(len(pages) / 100)} books long.")
         else:
             print("File was read successfully.")
+        input("Press enter to continue")
         print("Please middle-click the 'next page' button in minecraft.")
         next = getMousePosition()
         print("Please middle-click the 'previous' button in minecraft.")
