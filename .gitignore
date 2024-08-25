@@ -1,3 +1,9 @@
+# to ensure book files don't accidentally get copied along in development and testing
 *.txt
+*.pdf
+
+# to ignore dev files
 *.pyc
 .vscode/
+.venv/
+.venv/*
